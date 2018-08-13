@@ -1,0 +1,26 @@
+{
+  "name": "fileserver",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "body-parser": "latest",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "express-fileupload": "^0.4.0",
+    "express-session": "^1.15.6",
+    "file-extension": "^4.0.5",
+    "http-errors": "~1.6.2",
+    "mime-types": "^2.1.19",
+    "mongoose": "^5.2.7",
+    "morgan": "~1.9.0",
+    "npm": "^6.3.0",
+    "pug": "2.0.0-beta11",
+    "request-ip": "^2.1.1",
+    "shortid": "^2.2.12"
+  }
+}
