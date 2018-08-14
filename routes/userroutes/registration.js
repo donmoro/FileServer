@@ -7,54 +7,63 @@ const UserResponse = require('../../models/response/user');
 
 router.post('/registration', (req, res) => {
 
-    console.log(req.body);
-
     if (isRequiredFields(req.body)) {
 
-        const userModel = new UserModel({
-            email: req.body.email.toLowerCase(),
-            password: bcrypt.hashSync(req.body.password, 6),
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            dateOfBirth: req.body.dateOfBirth,
-            sex: req.body.sex,
-            isActive: true,
-            registrationDate: new Date().getTime(),
-            updated: null,
-            ip: requestIp.getClientIp(req)
-        });
+        const email = req.body.email.toLowerCase();
 
-        userModel.save().then(error => {
-            if (error) {
-                return res.send({
+        UserModel.findOne({email: email}, '_id', (err, id) => {
+            if (err) {
+                return res.status(500).send({
                     data: {
-                        user: new UserResponse(userModel.email, userModel.firstName, userModel.lastName, userModel.dateOfBirth, userModel.sex)
+                        error: err
                     }
                 });
+            } else if (!id) {
 
+                const userModel = new UserModel({
+                    email: email,
+                    password: bcrypt.hashSync(req.body.password, 6),
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    dateOfBirth: req.body.dateOfBirth,
+                    sex: req.body.sex,
+                    isActive: true,
+                    registrationDate: new Date().getTime(),
+                    updated: null,
+                    ip: requestIp.getClientIp(req)
+                });
+
+                userModel.save().then((userItem, error) => {
+                    if (error) {
+                        return res.status(500).send({
+                            data: {
+                                error: error
+                            }
+                        });
+                    } else {
+                        res.send({
+                            data: {
+                                user: new UserResponse(userItem.email, userItem.firstName, userItem.lastName, userItem.dateOfBirth, userItem.sex)
+                            }
+                        })
+                    }
+                })
             } else {
-                if (error.code === 11000) {
-                    return res.status(409).send({
-                        data: {
-                            error: 'USER_ALREADY_EXIST!'
-                        }
-                    })
-                } else {
-                    console.log(JSON.stringify(error, null, 2));
-                    return res.status(500).send({
-                        data: {
-                            error: 'ERROR_SIGN_UP_USER'
-                        }
-                    })
-                }
+                res.status(400).send({
+                    data: {
+                        error: 'USER_ALREADY_EXIST!'
+                    }
+                })
             }
+
         });
+
 
     }
     else {
         res.status(400).send({
             data: {
-                "error": "REQUIRED_FIELDS_IS_NOT_SET"
+                error: 'REQUIRED_FIELDS_IS_NOT_SET'
             }
         });
     }
@@ -63,17 +72,18 @@ router.post('/registration', (req, res) => {
 
 function isRequiredFields(obj) {
 
-    var fields = ['email', 'password', 'firstName', 'lastName', 'dateOfBirth', 'sex'];
+    // სავალდებულო ველები
+    const fields = ['email', 'password', 'firstName', 'lastName', 'dateOfBirth', 'sex'];
 
-    var i = 0;
+    let i = 0;
 
-    for (var key in obj) {
+    for (const key in obj) {
 
-        var index = fields.find((element) => {
+        var index = fields.find(element => {
             return element === key;
         });
 
-        if (index === undefined || obj[index] == null || obj[index] === '') {
+        if (typeof index === 'undefined' || obj[index] == null || obj[index] === '') {
             return false;
         }
 

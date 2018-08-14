@@ -32,7 +32,14 @@ app.use(
     })
 );
 app.use((req, res, next) => {
-    if (req.session.user) {
+
+    if ((req.url === "/api/login" || req.url === "/api/registration") && req.session.user) {
+        res.status(400).send({
+            data: {
+                error: 'YOU_ARE_ALREADY_LOG_IN'
+            }
+        });
+    } else if (req.session.user) {
         next();
     } else if (req.url === "/api/login" || req.url === "/api/registration") {
         next();
