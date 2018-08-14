@@ -74,7 +74,6 @@ router.get("/file/search/", function (req, res) {
 
     }
 
-
 });
 
 function callback(err, result, res) {
@@ -119,7 +118,7 @@ function callback(err, result, res) {
 }
 
 function isEmpty(obj) {
-    for (var key in obj) {
+    for (const key in obj) {
         if (obj.hasOwnProperty(key))
             return false;
     }

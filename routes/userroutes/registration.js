@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const fs = require('fs');
 const requestIp = require('request-ip');
 const UserModel = require('../../models/user');
 const bcrypt = require('bcrypt');
@@ -79,11 +78,11 @@ function isRequiredFields(obj) {
 
     for (const key in obj) {
 
-        var index = fields.find(element => {
+        let index = fields.find(element => {
             return element === key;
         });
 
-        if (typeof index === 'undefined' || obj[index] == null || obj[index] === '') {
+        if (!index) {
             return false;
         }
 
