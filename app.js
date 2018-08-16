@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const fileUpload = require("express-fileupload");
 const session = require('express-session');
+const redisStore = require('connect-redis')(session);
+const redisSession = require('node-redis-session');
 
 const app = express();
 
@@ -23,17 +25,27 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload()); // multipart form data
-app.use(
-    session({
-        secret: "iy98hcbh489n38984y4h498",
-        saveUninitialized: false,
-        resave: true,
-        rolling: true,
-        cookie: {
-            expires: new Date(Date.now() + 60 * 60 * 1000)
-        }
-    })
-);
+
+/* Node - ის Memory - ში Session - ების შენახვა */
+// app.use(
+//     session({
+//         secret: "iy98hcbh489n38984y4h498",
+//         saveUninitialized: false,
+//         resave: true,
+//         rolling: true,
+//         cookie: {
+//             expires: new Date(Date.now() + 60 * 60 * 1000)
+//         }
+//     })
+// );
+
+/* Redis - ის Memory - ში Session - ების შენახვა */
+app.use(cookieParser());
+app.use(redisSession({
+    cookieName: 'FileServerSessionId',
+    expireTime: 24 * 3600 * 1000
+}));
+
 app.use((req, res, next) => {
 
     if ((req.url === "/api/login" || req.url === "/api/registration") && req.session.user) {
