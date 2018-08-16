@@ -1,6 +1,10 @@
 # FileServer
-Node JS - Express - MongoDB
+Node JS - Express - MongoDB - Redis
 
 Postman - ის ბმული მეთოდების გამოძახებისთვის
 
 https://www.getpostman.com/collections/41516a13bf37a1a9a3d4
+
+რეგისტრაცია ხდება Mongo DB - ში Express - ისა და Mongoose - ის დახმარებით.
+სესიები ინახება Redis - ში. (ამ ბაზის სერვისი გადატვირთვის შემდეგ ყველა სესიაზე ინფორმაცია წაიშლება).
+ფაილის ატვირთვა/ჩამოტვირთვა/წაშლაზე წვდომა შეიძლება მხოლოდ ავთენთიფიკაციის გავლის შემდეგ.
