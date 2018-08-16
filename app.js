@@ -69,10 +69,10 @@ app.use((req, res, next) => {
 
 app.all('/api/logout', (req, res) => {
     delete req.session.user;
-    req.session.destroy();
+    //req.session.destroy();
     res.status(200).send({
             data: {
-                error: 'Logout successful'
+                message: 'Logout successful'
             }
         }
     )
