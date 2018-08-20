@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const fileModel = require('../../models/file');
+const responseFileModel = require('../../models/response/file');
 
 router.get('/remove/:fileId', (req, res) => {
 
@@ -40,7 +41,7 @@ router.get('/remove/:fileId', (req, res) => {
 
             res.send({
                 data: {
-                    file: result,
+                    file: new responseFileModel(result._id, result.fileName, result.originalName, result.mime),
                     success: true
                 }
             });
