@@ -14,43 +14,58 @@ router.post('/registration', (req, res) => {
             if (err) {
                 return res.status(500).send({
                     data: {
+                        errorMessage: 'Internal Server Error',
                         error: err
                     }
                 });
             } else if (!id) {
 
-                const userModel = new UserModel({
-                    email: email,
-                    password: bcrypt.hashSync(req.body.password, 6),
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    dateOfBirth: req.body.dateOfBirth,
-                    sex: req.body.sex,
-                    isActive: true,
-                    registrationDate: new Date().getTime(),
-                    updated: null,
-                    ip: requestIp.getClientIp(req)
-                });
-
-                userModel.save().then((userItem, error) => {
+                bcrypt.hash(req.body.password, 6, (error, hash) => {
                     if (error) {
-                        return res.status(500).send({
-                            data: {
-                                error: error
-                            }
+                        res.status(500).send({
+                            errorMessage: 'Internal Server Error',
+                            error
                         });
-                    } else {
+                        return;
+                    }
+
+                    const userModel = new UserModel({
+                        email: email,
+                        password: hash,
+                        firstName: req.body.firstName,
+                        lastName: req.body.lastName,
+                        dateOfBirth: req.body.dateOfBirth,
+                        sex: req.body.sex,
+                        isActive: true,
+                        registrationDate: new Date().getTime(),
+                        updated: null,
+                        ip: requestIp.getClientIp(req)
+                    });
+
+                    userModel.save().then((userItem, error) => {
+                        if (error) {
+                            res.status(500).send({
+                                data: {
+                                    errorMessage: 'Error While Saving',
+                                    error
+                                }
+                            });
+                            return;
+                        }
+
                         res.send({
                             data: {
                                 user: new UserResponse(userItem.email, userItem.firstName, userItem.lastName, userItem.dateOfBirth, userItem.sex)
                             }
-                        })
-                    }
-                })
+                        });
+
+                    });
+                });
             } else {
                 res.status(400).send({
                     data: {
-                        error: 'USER_ALREADY_EXIST!'
+                        errorMessage: 'USER_ALREADY_EXIST!',
+                        error: null
                     }
                 })
             }
@@ -58,11 +73,11 @@ router.post('/registration', (req, res) => {
         });
 
 
-    }
-    else {
+    } else {
         res.status(400).send({
             data: {
-                error: 'REQUIRED_FIELDS_IS_NOT_SET'
+                errorMessage: 'REQUIRED_FIELDS_IS_NOT_SET',
+                error: null
             }
         });
     }

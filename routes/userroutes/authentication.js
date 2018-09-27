@@ -17,31 +17,40 @@ router.post('/login', (req, res) => {
                 });
                 return;
             }
-            let passwordCheck = bcrypt.compareSync(password, userData.password);
-            if (passwordCheck) {
-                req.session.user = {
-                    email: userData.email,
-                    id: userData._id
-                };
-                req.session.user.expires = new Date(
-                    Date.now() + 3 * 24 * 3600 * 1000
-                );
-                res.status(200).send({
-                    data: {
-                        message: 'You Are logged in, Welcome!'
-                    }
-                });
-            } else {
-                res.status(401).send({
-                    data: {
-                        message: 'Incorrect password'
-                    }
-                });
-            }
+            bcrypt.compare(password, userData.password, (error, response) => {
+                if (error) {
+                    res.status(400).send({
+                        errorMessage: "Internal Server Error",
+                        error: error
+                    });
+                    return;
+                }
+                if (response) {
+                    req.session.user = {
+                        email: userData.email,
+                        id: userData._id
+                    };
+                    req.session.user.expires = new Date(
+                        Date.now() + 3 * 24 * 3600 * 1000
+                    );
+                    res.status(200).send({
+                        data: {
+                            message: 'You Are logged in, Welcome!'
+                        }
+                    });
+                } else {
+                    res.status(401).send({
+                        data: {
+                            message: 'Incorrect password'
+                        }
+                    });
+                }
+            });
         } else {
             res.status(401).send({
                 data: {
-                    message: 'Invalid login credentials'
+                    errorMessage: 'Invalid login credentials',
+                    error: err
                 }
             });
         }
