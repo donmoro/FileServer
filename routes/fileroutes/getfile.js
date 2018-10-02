@@ -142,7 +142,7 @@ function callback(err, result, res) {
 
     }
     else {
-        sendFile(res, result);
+        sendFile(res, result[0]);
     }
 
 }
