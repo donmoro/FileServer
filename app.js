@@ -3,19 +3,19 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const fileUpload = require("express-fileupload");
+const fileUpload = require('express-fileupload');
 const session = require('express-session');
 const redisStore = require('connect-redis')(session);
 const redisSession = require('node-redis-session');
 
 const app = express();
 
-const db = require("./services/dbconnect");
-const fileUploadRoute = require("./routes/fileroutes/fileupload");
-const getFile = require("./routes/fileroutes/getfile");
-const removeFile = require("./routes/fileroutes/removefile");
-const registration = require("./routes/userroutes/registration");
-const authentication = require("./routes/userroutes/authentication");
+const db = require('./services/dbconnect');
+const fileUploadRoute = require('./routes/fileroutes/fileupload');
+const getFile = require('./routes/fileroutes/getfile');
+const removeFile = require('./routes/fileroutes/removefile');
+const registration = require('./routes/userroutes/registration');
+const authentication = require('./routes/userroutes/authentication');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -29,7 +29,7 @@ app.use(fileUpload()); // multipart form data
 /* Node - ის Memory - ში Session - ების შენახვა */
 // app.use(
 //     session({
-//         secret: "iy98hcbh489n38984y4h498",
+//         secret: 'iy98hcbh489n38984y4h498',
 //         saveUninitialized: false,
 //         resave: true,
 //         rolling: true,
@@ -48,20 +48,22 @@ app.use(redisSession({
 
 app.use((req, res, next) => {
 
-    if ((req.url === "/api/login" || req.url === "/api/registration") && req.session.user) {
+    if ((req.url === '/api/login' || req.url === '/api/registration') && req.session.user) {
         res.status(400).send({
             data: {
-                error: 'YOU_ARE_ALREADY_LOG_IN'
+                errorMessage: 'YOU_ARE_ALREADY_LOG_IN',
+                error: null
             }
         });
     } else if (req.session.user) {
         next();
-    } else if (req.url === "/api/login" || req.url === "/api/registration") {
+    } else if (req.url === '/api/login' || req.url === '/api/registration') {
         next();
     } else {
         res.status(401).send({
             data: {
-                error: 'Authorization failed! Please login'
+                errorMessage: 'Authorization failed! Please login',
+                error: null
             }
         });
     }
@@ -78,11 +80,11 @@ app.all('/api/logout', (req, res) => {
     )
 });
 
-app.use("/api", fileUploadRoute);
-app.use("/api", getFile);
-app.use("/api", removeFile);
-app.use("/api", registration);
-app.use("/api", authentication);
+app.use('/api', fileUploadRoute);
+app.use('/api', getFile);
+app.use('/api', removeFile);
+app.use('/api', registration);
+app.use('/api', authentication);
 
 app.use(function (req, res, next) {
     next(createError(404));

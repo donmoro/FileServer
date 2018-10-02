@@ -3,49 +3,48 @@ const fs = require('fs');
 const fileModel = require('../../models/file');
 const FileResponse = require('../../models/response/file');
 
-router.get("/file/id/:id", function (req, res) {
+router.get("/file/id/:id", (req, res) => {
 
     const fileId = req.params.id;
 
     fileModel.findById(fileId, (err, result) => {
 
         if (err) {
-            res.status(400).send({
-                "data": {
-                    "error": err
+            return res.status(500).send({
+                data: {
+                    errorMessage: 'ERROR_WHILE_FIND_FILE',
+                    error: err
                 }
             });
-            return;
         }
 
         if (!result || !result.isActive) {
-            res.status(404).send({
-                "data": {
-                    "error": "FILE_NOT_FOUND"
+            return res.status(404).send({
+                data: {
+                    errorMessage: 'FILE_NOT_FOUND',
+                    error: null
                 }
             });
-            return;
         }
 
-        res.setHeader("Content-Type", result.mime);
-        fs.createReadStream("D:\\uploads\\" + result.fileName).pipe(res);
+        sendFile(res, result);
 
     });
 
 });
 
-router.get("/file/search/", function (req, res) {
+router.get('/file/search/', (req, res) => {
 
     let fileName = req.query.fileName;
     let fileContentType = req.query.contentType;
 
     if ((!fileName && !fileContentType) || (!fileName && fileContentType)) {
-        res.status(400).send({
-            "data": {
-                "error": "REQUIRE_PARAMS"
+        return res.status(400).send({
+            data: {
+                errorMessage: 'REQUIRE_PARAMS',
+                error: null
             }
         });
-        return;
     }
 
     if (fileName)
@@ -56,7 +55,7 @@ router.get("/file/search/", function (req, res) {
 
     if (fileName && !fileContentType) {
 
-        fileModel.find({originalName: fileName, isActive: true}, function (err, result) {
+        fileModel.find({originalName: fileName, isActive: true}, (err, result) => {
 
             callback(err, result, res);
 
@@ -76,24 +75,55 @@ router.get("/file/search/", function (req, res) {
 
 });
 
+function sendFile(res, result) {
+
+    res.setHeader('Content-Type', result.mime);
+
+    const fileName = 'D:\\uploads\\' + result.fileName;
+    const file = fs.createReadStream(fileName);
+    file.pipe(res);
+
+    file.on('error', (error) => {
+        res.status(500).send({
+            data: {
+                errorMessage: 'ERROR_WHILE_SENDING_FILE',
+                error
+            }
+        });
+    });
+
+    file.on('open', () => {
+        console.log(fileName + 'file opened');
+    });
+
+    file.on('close', () => {
+        console.log(fileName + 'file closed');
+    });
+
+    res.on('close', () => {
+        file.destroy();
+    });
+
+}
+
 function callback(err, result, res) {
 
     if (err) {
-        res.status(400).send({
-            "data": {
-                "error": err
+        return res.status(400).send({
+            data: {
+                errorMessage: 'INTERNAL_SERVER_ERROR',
+                error: err
             }
         });
-        return;
     }
 
     if (!result || isEmpty(result)) {
-        res.status(404).send({
-            "data": {
-                "error": "FILE_NOT_FOUND"
+        return res.status(404).send({
+            data: {
+                errorMessage: 'FILE_NOT_FOUND',
+                error: null
             }
         });
-        return;
     }
 
     if (result.length !== 1) {
@@ -105,14 +135,14 @@ function callback(err, result, res) {
         }
 
         res.send({
-            "data": {
-                "result": fileResponse
+            data: {
+                result: fileResponse
             }
         });
+
     }
     else {
-        res.setHeader("Content-Type", result[0].mime);
-        fs.createReadStream("D:\\uploads\\" + result[0].fileName).pipe(res);
+        sendFile(res, result);
     }
 
 }

@@ -10,20 +10,19 @@ router.post('/login', (req, res) => {
         if (!err) {
             console.log(userData);
             if (userData == null) {
-                res.status(401).send({
+                return res.status(401).send({
                     data: {
-                        message: 'Invalid login credentials'
+                        errorMessage: 'Invalid login credentials',
+                        error: null
                     }
                 });
-                return;
             }
             bcrypt.compare(password, userData.password, (error, response) => {
                 if (error) {
-                    res.status(400).send({
+                    return res.status(400).send({
                         errorMessage: "Internal Server Error",
-                        error: error
+                        error
                     });
-                    return;
                 }
                 if (response) {
                     req.session.user = {

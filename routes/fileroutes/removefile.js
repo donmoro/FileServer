@@ -9,21 +9,21 @@ router.get('/remove/:fileId', (req, res) => {
     fileModel.findById(fileId, (err, result) => {
 
         if (err) {
-            res.status(400).send({
+            return res.status(400).send({
                 data: {
+                    errorMessage: 'ERROR_WHILE_FIND_FILE',
                     error: err
                 }
             });
-            return;
         }
 
         if (!result || !result.isActive) {
-            res.status(404).send({
+            return res.status(404).send({
                 data: {
-                    error: "FILE_NOT_FOUND"
+                    errorMessage: "FILE_NOT_FOUND",
+                    error: null
                 }
             });
-            return;
         }
 
         result.isActive = false;
@@ -31,23 +31,21 @@ router.get('/remove/:fileId', (req, res) => {
         result.save(err => {
 
             if (err) {
-                res.status(400).send({
+                return res.status(400).send({
                     data: {
+                        errorMessage: 'ERROR_WHILE_SAVE_FILE',
                         error: err
                     }
                 });
-                return;
             }
 
             res.send({
                 data: {
-                    file: new responseFileModel(result._id, result.fileName, result.originalName, result.mime),
-                    success: true
+                    file: new responseFileModel(result._id, result.fileName, result.originalName, result.mime)
                 }
             });
 
         });
-
 
     });
 

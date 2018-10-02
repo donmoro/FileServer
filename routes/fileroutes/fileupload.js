@@ -22,8 +22,9 @@ router.post('/upload', (req, res) => {
     fs.writeFile('D:\\uploads\\' + fileName + "." + extension, req.files.file.data, err => {
 
         if (err) {
-            res.status(400).send({
+            return res.status(500).send({
                 data: {
+                    errorMessage: 'ERROR_WHILE_WRITE_FILE',
                     error: err
                 }
             });
@@ -41,23 +42,24 @@ router.post('/upload', (req, res) => {
 
         console.log(fileModel);
 
-        fileModel.save(err => {
-            if (err) {
-                console.log(err);
-                res.status(400).send({
+        fileModel.save(error => {
+
+            if (error) {
+                console.log(error);
+                return res.status(400).send({
                     data: {
-                        error: err
+                        errorMessage: 'ERROR_WHILE_SAVE_FILE_INFO',
+                        error
                     }
                 });
             }
-            else {
-                res.send({
-                    data: {
-                        file: new FileResponse(fileModel._id, fileModel.fileName, fileModel.originalName, fileModel.mime)
-                    }
-                })
-                ;
-            }
+
+            res.send({
+                data: {
+                    file: new FileResponse(fileModel._id, fileModel.fileName, fileModel.originalName, fileModel.mime)
+                }
+            });
+
         });
 
     })
