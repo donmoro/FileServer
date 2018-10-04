@@ -3,7 +3,7 @@ const fs = require('fs');
 const fileModel = require('../../models/file');
 const FileResponse = require('../../models/response/file');
 
-router.get("/file/id/:id", (req, res) => {
+router.get('/file/id/:id', (req, res) => {
 
     const fileId = req.params.id;
 

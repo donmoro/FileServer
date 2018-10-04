@@ -20,7 +20,7 @@ router.get('/remove/:fileId', (req, res) => {
         if (!result || !result.isActive) {
             return res.status(404).send({
                 data: {
-                    errorMessage: "FILE_NOT_FOUND",
+                    errorMessage: 'FILE_NOT_FOUND',
                     error: null
                 }
             });

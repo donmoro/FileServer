@@ -10,23 +10,31 @@ router.post('/registration', (req, res) => {
 
         const email = req.body.email.toLowerCase();
 
-        UserModel.findOne({email: email}, '_id', (err, id) => {
-            if (err) {
+        UserModel.findOne({email: email}, '_id', (error, id) => {
+            if (error) {
                 return res.status(500).send({
                     data: {
-                        errorMessage: 'Internal Server Error',
-                        error: err
+                        errorMessage: 'INTERNAL_SERVER_ERROR',
+                        error
                     }
                 });
             } else if (!id) {
 
+                if (req.body.password.length < 8) {
+                    return res.status(400).send({
+                        data: {
+                            errorMessage: 'PASSWORD_LENGTH_IS_NOT_VALID',
+                            error: null
+                        }
+                    })
+                }
+
                 bcrypt.hash(req.body.password, 6, (error, hash) => {
                     if (error) {
-                        res.status(500).send({
-                            errorMessage: 'Internal Server Error',
+                        return res.status(500).send({
+                            errorMessage: 'INTERNAL_SERVER_ERROR',
                             error
                         });
-                        return;
                     }
 
                     const userModel = new UserModel({
@@ -44,13 +52,12 @@ router.post('/registration', (req, res) => {
 
                     userModel.save().then((userItem, error) => {
                         if (error) {
-                            res.status(500).send({
+                            return res.status(500).send({
                                 data: {
-                                    errorMessage: 'Error While Saving',
+                                    errorMessage: 'ERROR_WHILE_SAVE_FILE',
                                     error
                                 }
                             });
-                            return;
                         }
 
                         res.send({
@@ -60,14 +67,16 @@ router.post('/registration', (req, res) => {
                         });
 
                     });
+
                 });
+
             } else {
                 res.status(400).send({
                     data: {
                         errorMessage: 'USER_ALREADY_EXIST!',
                         error: null
                     }
-                })
+                });
             }
 
         });

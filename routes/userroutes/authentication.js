@@ -12,7 +12,7 @@ router.post('/login', (req, res) => {
             if (userData == null) {
                 return res.status(401).send({
                     data: {
-                        errorMessage: 'Invalid login credentials',
+                        errorMessage: 'INVALID_LOGIN_CREDENTIALS',
                         error: null
                     }
                 });
@@ -20,7 +20,7 @@ router.post('/login', (req, res) => {
             bcrypt.compare(password, userData.password, (error, response) => {
                 if (error) {
                     return res.status(400).send({
-                        errorMessage: "Internal Server Error",
+                        errorMessage: 'INTERNAL_SERVER_ERROR',
                         error
                     });
                 }
@@ -34,21 +34,23 @@ router.post('/login', (req, res) => {
                     );
                     res.status(200).send({
                         data: {
-                            message: 'You Are logged in, Welcome!'
+                            message: 'YOU_ARE_LOGGED_IN',
+                            success: true
                         }
                     });
                 } else {
                     res.status(401).send({
                         data: {
-                            message: 'Incorrect password'
+                            errorMessage: 'INCORRECT_PASSWORD',
+                            error: null
                         }
                     });
                 }
             });
         } else {
-            res.status(401).send({
+            res.status(500).send({
                 data: {
-                    errorMessage: 'Invalid login credentials',
+                    errorMessage: 'INTERNAL_SERVER_ERROR',
                     error: err
                 }
             });

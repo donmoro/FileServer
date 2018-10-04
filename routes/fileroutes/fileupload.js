@@ -11,15 +11,17 @@ router.post('/upload', (req, res) => {
     if (!req.files) {
         return res.status(400).send({
             data: {
-                error: 'FILE_IS_NOT_SET'
+                errorMessage: 'FILE_IS_NOT_SET',
+                error: null
             }
         });
     }
 
     const fileName = new Date().getTime().toString();
     const extension = fileExtension(req.files.file.name);
+    const fileNameWithExtension = fileName + '.' + extension;
 
-    fs.writeFile('D:\\uploads\\' + fileName + "." + extension, req.files.file.data, err => {
+    fs.writeFile('D:\\uploads\\' + fileNameWithExtension, req.files.file.data, err => {
 
         if (err) {
             return res.status(500).send({
@@ -31,7 +33,7 @@ router.post('/upload', (req, res) => {
         }
 
         const fileModel = new FileModel({
-            fileName: fileName + "." + extension,
+            fileName: fileNameWithExtension,
             originalName: req.files.file.name,
             size: req.files.file.size,
             upload: new Date().getTime(),
