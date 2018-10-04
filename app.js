@@ -11,11 +11,6 @@ const redisSession = require('node-redis-session');
 const app = express();
 
 const db = require('./services/dbconnect');
-const fileUploadRoute = require('./routes/fileroutes/fileupload');
-const getFile = require('./routes/fileroutes/getfile');
-const removeFile = require('./routes/fileroutes/removefile');
-const registration = require('./routes/userroutes/registration');
-const authentication = require('./routes/userroutes/authentication');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -62,7 +57,7 @@ app.use((req, res, next) => {
     } else {
         res.status(401).send({
             data: {
-                errorMessage: 'Authorization failed! Please login',
+                errorMessage: 'AUTHORIZATION_FAILED',
                 error: null
             }
         });
@@ -73,18 +68,13 @@ app.all('/api/logout', (req, res) => {
     delete req.session.user;
     //req.session.destroy();
     res.status(200).send({
-            data: {
-                message: 'Logout successful'
-            }
+        data: {
+            message: 'Logout successful'
         }
-    )
+    });
 });
 
-app.use('/api', fileUploadRoute);
-app.use('/api', getFile);
-app.use('/api', removeFile);
-app.use('/api', registration);
-app.use('/api', authentication);
+app.use('/api', require('./utils/api'));
 
 app.use(function (req, res, next) {
     next(createError(404));
