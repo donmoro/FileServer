@@ -3,6 +3,7 @@ const fs = require('fs');
 const requestIp = require('request-ip');
 const fileExtension = require('file-extension');
 const mime = require('mime-types');
+
 const FileModel = require('../../models/file');
 const FileResponse = require('../../models/response/file');
 
@@ -64,7 +65,7 @@ router.post('/upload', (req, res) => {
 
         });
 
-    })
+    });
 
 });
 

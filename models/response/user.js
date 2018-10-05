@@ -1,4 +1,4 @@
-module.exports = function (email, firstName, lastName, dateOfBirth, sex) {
+module.exports = (email, firstName, lastName, dateOfBirth, sex) => {
     this.email = email;
     this.firstName = firstName;
     this.lastName = lastName;

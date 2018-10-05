@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
-const mongoDB = 'mongodb://localhost/FileServer';
-mongoose.connect(mongoDB);
+const mongoDB = 'mongodb://localhost:27017/FileServer';
+mongoose.connect(mongoDB, {useNewUrlParser: true})
+    .then(() => console.log('connecting to database successful'))
+    .catch(err => console.error('could not connect to mongo DB', err));
 
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
