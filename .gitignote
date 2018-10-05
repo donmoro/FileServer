@@ -5,6 +5,44 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Logs
+*.log
+
+# Java
+*.class
+
+*.jar
+*.war
+*.ear
+
+.mtj.tmp/
+hs_err_pid*
+
+# Runtime data
+*.pid
+*.seed
+
+# nbproject for netbeans
+**/nbproject/
+
+/node_modules
+
+# for idea
+**/.idea/
+**/target/
+
+# for visual studio
+*.njsproj
+**/.vs/
+**/.ntvs_analysis.dat
+**/obj/Debug
+
+# Mac Folder Structure
+**/.DS_Store
+
+package-lock.json
+
+
 # Runtime data
 pids
 *.pid
